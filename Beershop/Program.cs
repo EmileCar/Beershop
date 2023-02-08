@@ -16,6 +16,14 @@ builder.Services.AddControllersWithViews();
 // Add Automapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Session
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = "be.VIVES.Session";
+    // als je het onderste weglaat, standaard 20 minuten
+    options.IdleTimeout = TimeSpan.FromMinutes(1);
+});
+
 
 var app = builder.Build();
 
@@ -33,6 +41,8 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+// session
+app.UseSession();
 
 app.UseRouting();
 

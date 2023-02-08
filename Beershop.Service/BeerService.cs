@@ -35,6 +35,15 @@ namespace Beershop.Services
             await beerDAO.AddAsync(entity);
         }
 
+        public async Task EditAsync(Beer entity)
+        {
+            await beerDAO.EditAsync(entity);
+        }
+
+        public async Task DeleteAsync(Beer entity)
+        {
+            await beerDAO.DeleteAsync(entity);
+        }
 
 
 
@@ -54,6 +63,7 @@ namespace Beershop.Services
 
 
 
-      
+
+
     }
 }

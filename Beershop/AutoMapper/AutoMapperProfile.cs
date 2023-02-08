@@ -51,6 +51,16 @@ namespace BeerShop.AutoMapper
             CreateMap<BeerCreateVM, Beer>();
             CreateMap<Beer, BeerCreateVM>();
 
+            // Read
+
+
+            // Update
+            CreateMap<BeerEditVM, Beer>();
+            CreateMap<Beer, BeerEditVM>();
+
+
+            // Delete
+
         }
     }
 }

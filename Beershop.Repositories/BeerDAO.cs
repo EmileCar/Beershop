@@ -73,8 +73,34 @@ namespace BeerShop.Repositories
                 Console.WriteLine(ex);
                 throw;
             }
+        }
 
+        public async Task EditAsync(Beer entity)
+        {
+            _dbContext.Entry(entity).State = EntityState.Modified;
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
 
+        public async Task DeleteAsync(Beer entity)
+        {
+            _dbContext.Entry(entity).State = EntityState.Deleted;
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
     }

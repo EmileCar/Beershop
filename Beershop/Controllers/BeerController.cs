@@ -100,6 +100,93 @@ namespace BeerShop.Controllers
             return View(entityVM);
         }
 
+        // GET edit
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Beer? beer = await beerService.GetAsync(Convert.ToInt16(id));
+            if (beer == null)
+            {
+                return NotFound();
+            }
+
+            var beerEdit = new BeerEditVM()
+            {
+                Biernr = beer.Biernr,
+                Naam = beer.Naam,
+                Alcohol = Convert.ToInt16(beer.Alcohol),
+                Breweries = new SelectList(await breweryService.GetAllAsync()
+                  , "Brouwernr", "Naam", beer.Brouwernr),
+                Varieties = new SelectList(await varietyService.GetAllAsync()
+                  , "Soortnr", "Soortnaam", beer.Soortnr)
+            };
+
+            return View(beerEdit);
+
+        }
+
+        //  POST: Beer/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(BeerEditVM entityVM)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var beer = _mapper.Map<Beer>(entityVM);
+                    await beerService.EditAsync(beer);
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (DataException ex)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
+            }
+
+            catch (Exception ex)
+            {
+                //Log the error (uncomment dex variable name and add a line here to write a log.
+                ModelState.AddModelError("", "call system administrator.");
+            }
+
+            entityVM.Breweries =
+                 new SelectList(await breweryService.GetAllAsync(), "Brouwernr", "Naam", entityVM.Brouwernr);
+
+            entityVM.Varieties =
+                new SelectList(await varietyService.GetAllAsync(), "Soortnr", "Soortnaam", entityVM.Soortnr);
+
+            return View(entityVM);
+        }
+
+        // GET edit
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Beer? beer = await beerService.GetAsync(Convert.ToInt16(id));
+            if (beer == null)
+            {
+                return NotFound();
+            }
+
+            await beerService.DeleteAsync(beer);
+            return RedirectToAction("Index");
+
+        }
+
+        public async Task<IActionResult> Select(int? id)
+        {
+            return View();
+        }
 
 
     }
