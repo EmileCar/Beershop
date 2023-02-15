@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Beershop.Extensions;
 using Beershop.Services;
-
+using Beershop.ViewModels;
 using BeerShop.ViewModels;
 using BeerStore.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Data;
@@ -29,8 +31,9 @@ namespace BeerShop.Controllers
       
 
         }
-      
 
+
+        [Authorize]
         public async Task<IActionResult> Index()  // add using System.Threading.Tasks;
         {
 
@@ -185,7 +188,39 @@ namespace BeerShop.Controllers
 
         public async Task<IActionResult> Select(int? id)
         {
-            return View();
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            Beer? beer = await beerService.GetAsync(Convert.ToInt16(id));
+
+            CartVM item = new CartVM
+            {
+                Biernr = beer.Biernr,
+                Naam = beer.Naam,
+                Aantal = 1,
+                Prijs = 15,
+                DateCreated = System.DateTime.Now
+            };
+
+            ShoppingCartVM shopping;
+
+            // checken of al een session object is aangemaakt
+            if(HttpContext.Session.GetObject<ShoppingCartVM>("ShoppingCart") != null)
+            {
+                shopping = HttpContext.Session.GetObject<ShoppingCartVM>("ShoppingCart");
+            } else {
+                shopping = new ShoppingCartVM();
+                shopping.Cart = new List<CartVM>();
+            }
+
+            shopping?.Cart?.Add(item);
+
+            HttpContext.Session.SetObject("ShoppingCart", shopping);
+
+            // naar controller
+            return RedirectToAction("Index", "ShoppingCart");
         }
 
 

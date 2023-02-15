@@ -58,7 +58,7 @@
                 @*@Html.ActionLink("Edit", "Edit", new { id=item.Biernr}) |
                 @Html.ActionLink("Details", "Details", new { id=item.Biernr }) |
                 @Html.ActionLink("Delete", "Delete", new { id=item.Biernr})*@
-                    <a asp-action="Select" asp-route-id="@item.Biernr"><img src="~/assets/shoppingcart.jpg" alt="shoppingcart"/></a>
+                    <a asp-action="Select" asp-controller="Beer" asp-route-id="@item.Biernr"><img src="~/assets/shoppingcart.jpg" alt="shoppingcart"/></a>
             </td>
         </tr>
 }
