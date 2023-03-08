@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using BeerStore.Models.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace BeerStore.Models.Data
 {
@@ -25,8 +26,21 @@ namespace BeerStore.Models.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
+                // eerder stond hier de connectionstring, nu staat die in appsettings => beveiliging, appsettings niet op github plaatsen (gitignore)
+                
+                // install this packages: enkel domain laag
+                // - Microsoft.Extensions.Configuration.Json version 6
+                // - Microsoft.Extensions.Configuration
+                // - System.Configuration.ConfigurationManager
 
-                optionsBuilder.UseSqlServer("Server=.\\SQL19_VIVES; Database=BierSQL; Trusted_Connection=True; MultipleActiveResultSets=true;");
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                          .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                          .AddJsonFile("appsettings.json")
+                          .Build();
+
+                // add connectionstring to appsettings.json file (see appsettings.json)
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+
             }
         }
 

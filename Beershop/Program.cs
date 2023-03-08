@@ -1,4 +1,9 @@
 using Beershop.Data;
+using Beershop.Repositories;
+using Beershop.Repositories.Interfaces;
+using Beershop.Service;
+using Beershop.Service.Interfaces;
+using BeerStore.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +28,16 @@ builder.Services.AddSession(options =>
     // als je het onderste weglaat, standaard 20 minuten
     options.IdleTimeout = TimeSpan.FromMinutes(1);
 });
+
+// Dependency Injections
+builder.Services.AddTransient<IService<Beer>, BeerServiceI>();
+builder.Services.AddTransient<IDAO<Beer>, BeerDAOI>();
+
+builder.Services.AddTransient<IService<Brewery>, BreweryServiceI>();
+builder.Services.AddTransient<IDAO<Brewery>, BreweryDAOI>();
+
+// om de outdated manier van data ophalen te gebruiken
+builder.Services.AddTransient<IDAO<Brewery>, BrewerySQLDAO>();
 
 
 var app = builder.Build();

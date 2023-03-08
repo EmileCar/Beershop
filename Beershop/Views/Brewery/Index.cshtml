@@ -1,0 +1,65 @@
+﻿@model IEnumerable<BeerShop.ViewModels.BreweryVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Brouwernr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Naam)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Adres)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Postcode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gemeente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Omzet)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brouwernr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Naam)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Adres)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Postcode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gemeente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Omzet)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Beershop.Extensions;
+using Beershop.Service;
+using Beershop.Service.Interfaces;
 using Beershop.Services;
 using Beershop.ViewModels;
 using BeerShop.ViewModels;
@@ -13,21 +15,19 @@ namespace BeerShop.Controllers
 {
     public class BeerController : Controller
     {
-        private BeerService beerService;
-   
-       private BreweryService breweryService;
-        private VarietyService varietyService;
-
+        private IService<Beer> _beerService;
+        private BreweryService _breweryService;
+        private VarietyService _varietyService;
 
         private readonly IMapper _mapper;
 
-
-        public BeerController(IMapper mapper)
+        public BeerController(IMapper mapper, IService<Beer> beerService)
         {
             _mapper = mapper;
-            beerService = new BeerService();
-            varietyService = new VarietyService();
-            breweryService = new BreweryService();
+            //beerService = new BeerService();
+            _beerService = beerService;
+            _varietyService = new VarietyService();
+            _breweryService = new BreweryService();
       
 
         }
@@ -37,7 +37,7 @@ namespace BeerShop.Controllers
         public async Task<IActionResult> Index()  // add using System.Threading.Tasks;
         {
 
-            var list = await beerService.GetAllAsync(); 
+            var list = await _beerService.GetAll(); 
             List<BeerVM> listVM = _mapper.Map<List<BeerVM>>(list);
             return View(listVM);
 
@@ -57,9 +57,9 @@ namespace BeerShop.Controllers
 
             var beerCreate = new BeerCreateVM()
             {
-                Breweries = new SelectList(await breweryService.GetAllAsync()
+                Breweries = new SelectList(await _breweryService.GetAllAsync()
                   , "Brouwernr", "Naam"),
-                Varieties = new SelectList(await varietyService.GetAllAsync()
+                Varieties = new SelectList(await _varietyService.GetAllAsync()
                   , "Soortnr", "Soortnaam")
             };
 
@@ -78,7 +78,7 @@ namespace BeerShop.Controllers
                 if (ModelState.IsValid)
                 {
                     var beer = _mapper.Map<Beer>(entityVM);
-                    await beerService.AddAsync(beer);
+                    await _beerService.Add(beer);
                     return RedirectToAction("Index");
                 }
             }
@@ -95,10 +95,10 @@ namespace BeerShop.Controllers
             }
 
             entityVM.Breweries =
-                 new SelectList(await breweryService.GetAllAsync(), "Brouwernr", "Naam", entityVM.Brouwernr);
+                 new SelectList(await _breweryService.GetAllAsync(), "Brouwernr", "Naam", entityVM.Brouwernr);
 
             entityVM.Varieties =
-                new SelectList(await varietyService.GetAllAsync(), "Soortnr", "Soortnaam", entityVM.Soortnr);
+                new SelectList(await _varietyService.GetAllAsync(), "Soortnr", "Soortnaam", entityVM.Soortnr);
 
             return View(entityVM);
         }
@@ -111,7 +111,7 @@ namespace BeerShop.Controllers
                 return NotFound();
             }
 
-            Beer? beer = await beerService.GetAsync(Convert.ToInt16(id));
+            Beer? beer = await _beerService.FindById(Convert.ToInt16(id));
             if (beer == null)
             {
                 return NotFound();
@@ -122,9 +122,9 @@ namespace BeerShop.Controllers
                 Biernr = beer.Biernr,
                 Naam = beer.Naam,
                 Alcohol = Convert.ToInt16(beer.Alcohol),
-                Breweries = new SelectList(await breweryService.GetAllAsync()
+                Breweries = new SelectList(await _breweryService.GetAllAsync()
                   , "Brouwernr", "Naam", beer.Brouwernr),
-                Varieties = new SelectList(await varietyService.GetAllAsync()
+                Varieties = new SelectList(await _varietyService.GetAllAsync()
                   , "Soortnr", "Soortnaam", beer.Soortnr)
             };
 
@@ -142,7 +142,7 @@ namespace BeerShop.Controllers
                 if (ModelState.IsValid)
                 {
                     var beer = _mapper.Map<Beer>(entityVM);
-                    await beerService.EditAsync(beer);
+                    await _beerService.Update(beer);
                     return RedirectToAction("Index");
                 }
             }
@@ -159,10 +159,10 @@ namespace BeerShop.Controllers
             }
 
             entityVM.Breweries =
-                 new SelectList(await breweryService.GetAllAsync(), "Brouwernr", "Naam", entityVM.Brouwernr);
+                 new SelectList(await _breweryService.GetAllAsync(), "Brouwernr", "Naam", entityVM.Brouwernr);
 
             entityVM.Varieties =
-                new SelectList(await varietyService.GetAllAsync(), "Soortnr", "Soortnaam", entityVM.Soortnr);
+                new SelectList(await _varietyService.GetAllAsync(), "Soortnr", "Soortnaam", entityVM.Soortnr);
 
             return View(entityVM);
         }
@@ -175,13 +175,13 @@ namespace BeerShop.Controllers
                 return NotFound();
             }
 
-            Beer? beer = await beerService.GetAsync(Convert.ToInt16(id));
+            Beer? beer = await _beerService.FindById(Convert.ToInt16(id));
             if (beer == null)
             {
                 return NotFound();
             }
 
-            await beerService.DeleteAsync(beer);
+            await _beerService.Delete(beer);
             return RedirectToAction("Index");
 
         }
@@ -193,7 +193,7 @@ namespace BeerShop.Controllers
                 return NotFound();
             }
 
-            Beer? beer = await beerService.GetAsync(Convert.ToInt16(id));
+            Beer? beer = await _beerService.FindById(Convert.ToInt16(id));
 
             CartVM item = new CartVM
             {
